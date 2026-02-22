@@ -1,0 +1,37 @@
+Sql Queries Analysing netflix(Basic to Advance) 
+
+-- Total number of customers
+select count(customer_id) from streaming_customers;
+
+-- Total active subscription
+select count(status) from streaming_subscriptions where status="Active";
+
+-- Total revenue genrated
+select sum(amount) as revenue_genrated from streaming_payments;
+
+-- Average monthly fee per plan
+select plan_type, avg(monthly_fee) from streaming_subscriptions group by plan_type;
+
+-- Revenue per city
+select city, sum(amount) as total_revenue_per_city from streaming_customers join streaming_subscriptions on streaming_customers.customer_id=streaming_subscriptions.customer_id join streaming.payments on streaming_payments.subscription_id=streaming_subscriptions.subscription_id group by city;
+
+-- Average watchtime per city
+select city, avg(watch_time_minutes) from streaming_customers join streaming_watch_history on streaming_customers.customer_id=streaming_watch_history.customer_id group by city;
+
+-- no.of subscriptions per city
+select city, count(subscription_id) from streaming_customers join streaming_subscriptions on streaming_customers.customer_id=streaming_subscriptions.customer_id group by city;
+
+-- Top 5 customers by total watch time
+select customer_name, sum(watch_time_minutes) from streaming_customers join streaming_watch_history on streaming_customers.customer_id=streaming_watch_history.customer_id group by customer_name order by sum(watch_time_minutes) desc limit 5;
+
+-- Customer who cancelled subscription
+select customer_name, status from streaming_customers join streaming_subscriptions on streaming_customers.customer_id=streaming_subscriptions.customer_id where status="Cancelled";
+
+-- Reveue per payment method
+select payment_method, sum(amount) from streaming_payments group by payment_method;
+
+-- Customers paying above average subscription fee
+select customer_id, monthly_fee from streaming_subscriptions where monthly_fee>(select avg(monthly_fee) from streaming_subscriptions);
+
+-- Cities with more than 200 active users
+select city, count(*) as active_users from streaming_customers join streaming_subscriptions on streaming_customers.customer_id=streaming_subscriptions.customer_id where status="Active" group by city having count(*)>200; 
